@@ -1,4 +1,4 @@
-#define OS "WIN"
+#define OS_WIN
 /**************
  * "WIN"	: Windows all
  * "LINUX"	: Linux all
@@ -10,7 +10,8 @@ using namespace std;
 
 string PATH;
 
-namespace OSwindows
+#ifdef OS_WIN
+namespace SYS
 {
 	#include<windows.h>
 	
@@ -34,29 +35,47 @@ namespace OSwindows
 		return res;
 	}
 }
+#endif
 
+void exit_all(int exitVal)
+{
+	if(exitval==0) exit(0);
+	SYS::SetFontColor(CRED);
+	cout<<"checker received an error, ERRCODE: "<<exitVal<<endl;
+	cout<<"Please read ERRCODE.md to solve it"<<endl;
+	cout<<"You can also upload \'temp/ERR.log\' to us"<<endl
+}
 
 namespace random
 {
-	inline void RandomInit()
-	{
-		fostream iofile;
-		try
-		{
-			iofile.open("random.seed");
-			unsigned seed=1201;
-			iofile>>seed;
-			srand(seed);
-			iofile<<(seed*rand())%1201201;
-		}
-		catch(...)
-		{
-			exit("3315");
-		}
+#define int32 int
+#define int64 long long
+#define uint32 unsigned int
+#define uint64 unsigned long long
+	std::mt19937 root1(std::chrono::steady_clock::now().time_since_epoch().count());
+	std::mt19937_64 root2(std::chrono::steady_clock::now().time_since_epoch().count());
+	uint32 ruint32(uint32 l, uint32 r) {
+		assert(r >= l);
+		return root1() % (r - l + 1) + l;
 	}
+	uint64 ruint64(uint32 l, uint32 r) {
+		assert(r >= l);
+		return root2() % (r - l + 1) + l;
+	}
+	int32 rint32(int l, int r) {
+		assert(r >= l);
+		return (int32)ruint32(l, r);
+	}
+	int64 rint64(int64 l, int64 r) {
+		assert(r >= l);
+		return (int64)ruint64(l, r);
+	}
+#undef int32
+#undef int64
+#undef uint32
+#undef uint64
 }
 
-using namespace OSwindows;
 using namespace random;
 
 inline void INIT()
