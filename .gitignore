@@ -1,2 +1,4 @@
+# temp/*
 *.exe
+*.out
 *.log
