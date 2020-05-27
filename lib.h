@@ -125,6 +125,7 @@ namespace LOG
 	ofstream logF;
 	void init()
 	{
+		mkdir(PATH + "/temp");
 		logF.open(PATH + "/temp/" + FNAME + ".log", ios::app);
 		if(!logF) exit_all(1345);
 		logF << "[o] " << logTime() << ' ' << "STARTED_SECCESSFULLY: " << PATH << ' ' << FNAME << endl;
