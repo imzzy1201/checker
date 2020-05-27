@@ -1,2 +1,2 @@
 *.exe
-temp/*.log
+*.log
