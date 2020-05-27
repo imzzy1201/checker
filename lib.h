@@ -11,6 +11,7 @@ void exit_all(int);
 namespace SYS
 {
 #define OS_WIN 1
+#define MAX_PATH 10004
 
 #ifdef OS_WIN
 #include<windows.h>
@@ -28,7 +29,11 @@ namespace SYS
 	void pause() {system("pause");}
 	pair<string, string> getpath()
 	{
-		string res1 = _pgmptr, res2 = "";
+		TCHAR *szFilePath = new TCHAR[MAX_PATH];
+		szFilePath[0] = '\0';
+		GetModuleFileName(NULL, szFilePath, MAX_PATH - 2);
+		string res1 = szFilePath, res2 = "";
+		delete[] szFilePath;
 		for(int i = 0; i < res1.length(); ++i) if(res1[i] == '\\') res1[i] = '/';
 		for(int i = res1.length() - 1; i > 0; --i)
 			if(res1[i] != '/') res2 = res1[i] + res2, res1.pop_back();
@@ -65,8 +70,9 @@ namespace SYS
 	void pause() {cout << "Press any key to continue . . .", getch(), cout << endl;}
 	pair<string, string> getpath()
 	{
-		char *tmp = new char[100004];
-		readlink("/proc/self/exe", tmp, 100002);
+		char *tmp = new char[MAX_PATH];
+		tmp[0] = '\0';
+		readlink("/proc/self/exe", tmp, MAX_PATH - 2);
 		string res1 = tmp, res2 = "";
 		delete[] tmp;
 		for(int i = 0; i < res1.length(); ++i) if(res1[i] == '\\') res1[i] = '/';
