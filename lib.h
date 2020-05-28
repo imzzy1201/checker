@@ -22,9 +22,9 @@ namespace SYS
 	const int CYELLOW = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN;
 	const int CWHITE  = FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
 	void SetColor(int c) {SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), c);}
-	void title(string t) {system(("title " + t).c_str());}
-	void mkdir(string t) {system(("mkdir \"" + t + '\"').c_str());}
-	void mkfile(string t) {system(("cd.>\"" + t + '\"').c_str());}
+	void title(string t) {system(("title " + t + " 2>nul >nul").c_str());}
+	void mkdir(string t) {system(("mkdir \"" + t + "\" 2>nul >nul").c_str());}
+	void mkfile(string t) {system(("cd.>\"" + t + "\" 2>nul >nul").c_str());}
 	int run(string t) {return system(t.c_str());}
 	void pause() {system("pause");}
 	pair<string, string> getpath()
@@ -122,13 +122,17 @@ namespace LOGTIME
 
 namespace LOG
 {
+#define LOUT  "[o] "<<logTime()<<' '
+#define LERR  "[x] "<<logTime()<<' '
+#define LWARN "[!] "<<logTime()<<' '
 	ofstream logF;
 	void init()
 	{
 		mkdir(PATH + "/temp");
 		logF.open(PATH + "/temp/" + FNAME + ".log", ios::app);
 		if(!logF) exit_all(1345);
-		logF << "[o] " << logTime() << ' ' << "STARTED_SECCESSFULLY: " << PATH << ' ' << FNAME << endl;
+		logF << "------------------------------------------------" << endl;
+		logF << LOUT << "STARTED_SECCESSFULLY: " << PATH << ' ' << FNAME << endl;
 	}
 	void stop() {logF.close();}
 } using namespace LOG;
@@ -138,7 +142,7 @@ void exit_all(int exitVal)
 {
 	if(exitVal == 0)
 	{
-		logF << "[o] " << logTime() << ' ' << "EXITED_NORMALLY: " << exitVal << endl << endl;
+		logF << LOUT << "EXITED_NORMALLY: " << exitVal << endl;
 		LOG::stop();
 		SetColor(CWHITE);
 		exit(0);
@@ -146,8 +150,12 @@ void exit_all(int exitVal)
 	SetColor(CRED);
 	cout << "Program received an error, ERRCODE: " << exitVal << endl;
 	cout << "Please read ERRCODE.md to find out what's wrong. ";
-	cout << "You can also upload \'temp/*.log\' to us at GitHub to find more information about this." << endl;
-	if(logF) logF << "[x] " << logTime() << ' ' << "ABORTED: " << exitVal << endl << endl;
+	cout << "You can also send \'temp/*.log\' to us at GitHub to find more information about this." << endl;
+	if(logF)
+	{
+		try {logF << LERR << "ABORTED: " << exitVal << endl;}
+		catch(...) {cout << "[We cannot record this error into log file.]" << endl;}
+	}
 	LOG::stop();
 	SetColor(CWHITE);
 	pause();

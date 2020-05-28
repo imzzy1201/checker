@@ -5,12 +5,15 @@ using namespace std;
 
 signed main()
 {
+	// system("@echo off");
 	INIT();
 	cout<<PATH<<' '<<FNAME<<endl;
 	cout<<random(-100,-1)<<endl;
 	SetColor(CYELLOW);
 	title("aaa");
-	logF<<"hey"<<endl;
+	logF<<LOUT<<"hey"<<endl;
+	logF<<LERR<<"hey"<<endl;
+	logF<<LWARN<<"hey"<<endl;
 	cout<<logTime()<<endl;
 	Sleep(100);
 	cout<<logTime()<<endl;
@@ -18,6 +21,6 @@ signed main()
 	SetColor(CBLUE);
 	cout<<random(100000000000ll,1000000000000ll)<<endl;
 	SetColor(CWHITE);
-	exit_all(0);
+	exit_all(33);
 	return 0;
 }
