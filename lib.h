@@ -13,6 +13,16 @@ namespace SYS
 #define OS_WIN 1
 #define MAX_PATH 10004
 
+	pair<string, string> Fpath(string full)
+	{
+		string fname = "";
+		for(uInt32 i = 0; i < full.length(); ++i) if(full[i] == '\\') full[i] = '/';
+		for(uInt32 i = full.length() - 1; i > 0; --i)
+			if(full[i] != '/') fname = full[i] + fname, full.pop_back();
+			else {full.pop_back(); break;}
+		return make_pair(full, fname);
+	}
+
 #ifdef OS_WIN
 #include<windows.h>
 #include<conio.h>
@@ -27,18 +37,14 @@ namespace SYS
 	void mkfile(string t) {system(("cd.>\"" + t + "\" 2>nul >nul").c_str());}
 	int run(string t) {return system(t.c_str());}
 	void pause() {system("pause");}
-	pair<string, string> getpath()
+	pair<string, string> GetPath()
 	{
 		TCHAR *szFilePath = new TCHAR[MAX_PATH];
 		szFilePath[0] = '\0';
 		GetModuleFileName(NULL, szFilePath, MAX_PATH - 2);
-		string res1 = szFilePath, res2 = "";
+		pair<string, string> res = Fpath(string(szFilePath));
 		delete[] szFilePath;
-		for(int i = 0; i < res1.length(); ++i) if(res1[i] == '\\') res1[i] = '/';
-		for(int i = res1.length() - 1; i > 0; --i)
-			if(res1[i] != '/') res2 = res1[i] + res2, res1.pop_back();
-			else {res1.pop_back(); break;}
-		return make_pair(res1, res2);
+		return res;
 	}
 #endif
 
@@ -68,18 +74,14 @@ namespace SYS
 		return ch;
 	}
 	void pause() {cout << "Press any key to continue . . .", getch(), cout << endl;}
-	pair<string, string> getpath()
+	pair<string, string> GetPath()
 	{
-		char *tmp = new char[MAX_PATH];
-		tmp[0] = '\0';
-		readlink("/proc/self/exe", tmp, MAX_PATH - 2);
-		string res1 = tmp, res2 = "";
-		delete[] tmp;
-		for(int i = 0; i < res1.length(); ++i) if(res1[i] == '\\') res1[i] = '/';
-		for(int i = res1.length() - 1; i > 0; --i)
-			if(res1[i] != '/') res2 = res1[i] + res2, res1.pop_back();
-			else {res1.pop_back(); break;}
-		return make_pair(res1, res2);
+		char *szFilePath = new char[MAX_PATH];
+		szFilePath[0] = '\0';
+		readlink("/proc/self/exe", szFilePath, MAX_PATH - 2);
+		pair<string, string> res = Fpath(string(szFilePath));
+		delete[] szFilePath;
+		return res;
 	}
 #endif
 } using namespace SYS;
@@ -113,7 +115,7 @@ namespace LOGTIME
 		szTime[0] = '\0';
 		ftime(&stTimeb);
 		ptm = localtime(&stTimeb.time);
-		sprintf(szTime, "%04d-%02d-%02d %02d:%02d:%02d.%03d\0",
+		sprintf(szTime, "%04d-%02d-%02d %02d:%02d:%02d.%03d",
 				ptm->tm_year + 1900, ptm->tm_mon + 1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, stTimeb.millitm);
 		return string(szTime);
 	}
@@ -165,7 +167,7 @@ void exit_all(int exitVal)
 
 void INIT()
 {
-	pair<string, string> p = getpath();
+	pair<string, string> p = GetPath();
 	PATH = p.first, FNAME = p.second;
 	RANDOM::init();
 	LOG::init();
