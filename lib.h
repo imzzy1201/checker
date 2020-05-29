@@ -13,7 +13,7 @@ namespace SYS
 #define OS_WIN 1
 #define MAX_PATH 10004
 
-	pair<string, string> Fpath(string full)
+	pair<string, string> FPath(string full)
 	{
 		string fname = "";
 		for(uInt32 i = 0; i < full.length(); ++i) if(full[i] == '\\') full[i] = '/';
@@ -42,7 +42,7 @@ namespace SYS
 		TCHAR *szFilePath = new TCHAR[MAX_PATH];
 		szFilePath[0] = '\0';
 		GetModuleFileName(NULL, szFilePath, MAX_PATH - 2);
-		pair<string, string> res = Fpath(string(szFilePath));
+		pair<string, string> res = FPath(string(szFilePath));
 		delete[] szFilePath;
 		return res;
 	}
@@ -79,7 +79,7 @@ namespace SYS
 		char *szFilePath = new char[MAX_PATH];
 		szFilePath[0] = '\0';
 		readlink("/proc/self/exe", szFilePath, MAX_PATH - 2);
-		pair<string, string> res = Fpath(string(szFilePath));
+		pair<string, string> res = FPath(string(szFilePath));
 		delete[] szFilePath;
 		return res;
 	}
@@ -108,7 +108,7 @@ namespace LOGTIME
 {
 #include<sys/time.h>
 	char szTime[30];
-	string logTime()
+	string LogTime()
 	{
 		struct tm *ptm;
 		struct timeb stTimeb;
@@ -124,9 +124,9 @@ namespace LOGTIME
 
 namespace LOG
 {
-#define LOUT  "[o] "<<logTime()<<' '
-#define LERR  "[x] "<<logTime()<<' '
-#define LWARN "[!] "<<logTime()<<' '
+#define LOUT  "[o] "<<LogTime()<<' '
+#define LERR  "[x] "<<LogTime()<<' '
+#define LWARN "[!] "<<LogTime()<<' '
 	ofstream logF;
 	void init()
 	{
