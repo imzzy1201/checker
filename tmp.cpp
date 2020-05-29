@@ -6,7 +6,7 @@ using namespace std;
 signed main()
 {
 	// system("@echo off");
-	INIT();
+	initialize("HELLO");
 	cout<<PATH<<' '<<FNAME<<endl;
 	cout<<random(-100,-1)<<endl;
 	SetColor(CYELLOW);

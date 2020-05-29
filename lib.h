@@ -92,8 +92,8 @@ namespace RANDOM
 	default_random_engine random_root;
 	void init()
 	{
-		std::mt19937 tmproot(std::chrono::steady_clock::now().time_since_epoch().count());
-		random_root.seed(tmproot() + 1201);
+		std::mt19937 rSeed(std::chrono::steady_clock::now().time_since_epoch().count());
+		random_root.seed(rSeed() + 1201);
 	}
 	template<typename T> T random(T l, T r)
 	{
@@ -128,19 +128,19 @@ namespace LOG
 #define LERR  "[x] "<<LogTime()<<' '
 #define LWARN "[!] "<<LogTime()<<' '
 	ofstream logF;
-	void init()
+	void init(string id)
 	{
 		mkdir(PATH + "/temp");
-		logF.open(PATH + "/temp/" + FNAME + ".log", ios::app);
+		logF.open(PATH + "/temp/" + FNAME + '-' + id + ".log", ios::app);
 		if(!logF) exit_all(1345);
 		logF << "------------------------------------------------" << endl;
-		logF << LOUT << "STARTED_SECCESSFULLY: " << PATH << ' ' << FNAME << endl;
+		logF << LOUT << "STARTED_SECCESSFULLY: " << PATH << ' ' << FNAME << ' ' << id << endl;
 	}
 	void stop() {logF.close();}
 } using namespace LOG;
 
 
-void exit_all(int exitVal)
+void exit_all(int exitVal = 0)
 {
 	if(exitVal == 0)
 	{
@@ -165,10 +165,18 @@ void exit_all(int exitVal)
 }
 
 
-void INIT()
+void initialize(string id = "RANDOM_VAL")
 {
 	pair<string, string> p = GetPath();
 	PATH = p.first, FNAME = p.second;
 	RANDOM::init();
-	LOG::init();
+	if(id == "RANDOM_VAL")
+	{
+		char *tmp = new char[50];
+		tmp[0] = '\0';
+		sprintf(tmp, "%09d", random(1, 999999999));
+		id = tmp;
+		delete[] tmp;
+	}
+	LOG::init(id);
 }
