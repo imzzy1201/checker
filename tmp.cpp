@@ -14,9 +14,9 @@ signed main()
 	logF<<LOUT<<"hey"<<endl;
 	logF<<LERR<<"hey"<<endl;
 	logF<<LWARN<<"hey"<<endl;
-	cout<<logTime()<<endl;
+	cout<<LogTime()<<endl;
 	Sleep(100);
-	cout<<logTime()<<endl;
+	cout<<LogTime()<<endl;
 	pause();
 	SetColor(CBLUE);
 	cout<<random(100000000000ll,1000000000000ll)<<endl;
