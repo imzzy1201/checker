@@ -5,29 +5,28 @@ namespace CHECK
 	string tmpDir,ansOut,myOut,logFile,testFile;
 	int exit_val,num,errcode;
 	clock_t startTime,endTime;
-	ifstream tmpF;
-	int check(string cur,int id,int times,string make,string ans,string my,string compare)
+	ofstream tmpF;
+	int check(string id,int times,string make,string ans,string my,string compare)
 	{
 		try
 		{
+			logF<<LOUT<<"CHECK::check("<<id<<','<<times<<','<<make<<','<<ans<<','<<my<<','<<compare<<')'<<endl;
+			
 			title(string("checking: ")+my+" with "+ans);
 						
-			char *tmpC=new char[34];
-			sprintf(tmpC,"%010d",id);
-			tmpDir=cur+"\\temp\\"+tmpC;
-			ansOut=tmpDir+"\\ans.out";
-			myOut=tmpDir+"\\my.out";
-			logFile=tmpDir+"\\"+tmpC+".log";
-			testFile=tmpDir+"\\test.in";
-			delete[] tmpC;
+			tmpDir=PATH+"/temp/"+FNAME+'/'+id;
+			ansOut=tmpDir+"/ans.out";
+			myOut=tmpDir+"/my.out";
+			logFile=tmpDir+"/"+id+".log";
+			testFile=tmpDir+"/test.in";
 			
-			tmpF.open(logFile,ios::in);
-			if(tmpF)
+			tmpF.open(logFile,ios::out);
+			if(!tmpF)
 			{
 				tmpF.close();
-				SetFontColor(CRED);
+				SetColor(CRED);
 				cout<<"Err while creating files: File "<<logFile<<" already exists";
-				SetFontColor(CWHITE);
+				SetColor(CWHITE);
 				return -1;
 			}
 			mkdir(tmpDir);
@@ -35,62 +34,72 @@ namespace CHECK
 			mkfile(myOut);
 			mkfile(logFile);
 			
-			SetFontColor(CYELLOW);
+			SetColor(CYELLOW);
+			logF<<LOUT<<"CHECK::check() "<<"start tests"<<endl;
 			cout<<"-------- start tests --------"<<endl<<endl;
 			
 			errcode=0;
-			for(num=1;num<=times;++num)
+			if(num>999999999||num<1) num=999999999;
+			for(num=1;num!=times;++num)
 			{
-				SetFontColor(CWHITE);
-				printf("\n----- test %010d -----\n",num);
+				SetColor(CWHITE);
+				printf("\n----- test %09d -----\n",num);
+				logF<<LOUT<<"CHECK::check() test "<<num<<endl;
 				
 				startTime=clock();
 					exit_val=run(make+" >\""+testFile+"\"");
 				endTime=clock();
 				if(exit_val) {errcode=1; break;}
-				SetFontColor(CWHITE); cout<<"\'make\'    ";
-				SetFontColor(CGREEN); cout<<"exited normally";
-				SetFontColor(CWHITE); cout<<" with time used: ";
-				SetFontColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				SetColor(CWHITE);  cout<<"\'make\'    ";
+				SetColor(CGREEN);  cout<<"exited normally";
+				SetColor(CWHITE);  cout<<" with time used: ";
+				SetColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				logF<<LOUT<<"CHECK::check() test "<<num<<" make exited normally.  Start: "<<startTime<<" End: "<<endTime<<" CLOCK: "<<CLOCKS_PER_SEC<<endl;
 				
 				startTime=clock();
 					exit_val=run(ans+" <\""+testFile+"\" >\""+ansOut+"\"");
 				endTime=clock();
 				if(exit_val) {errcode=2; break;}
-				SetFontColor(CWHITE); cout<<"\'ans\'     ";
-				SetFontColor(CGREEN); cout<<"exited normally";
-				SetFontColor(CWHITE); cout<<" with time used: ";
-				SetFontColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				SetColor(CWHITE);  cout<<"\'ans\'     ";
+				SetColor(CGREEN);  cout<<"exited normally";
+				SetColor(CWHITE);  cout<<" with time used: ";
+				SetColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				logF<<LOUT<<"CHECK::check() test "<<num<<" ans exited normally.  Start: "<<startTime<<" End: "<<endTime<<" CLOCK: "<<CLOCKS_PER_SEC<<endl;
 				
 				startTime=clock();
 					exit_val=run(my+" <\""+testFile+"\" >\""+myOut+"\"");
 				endTime=clock();
 				if(exit_val) {errcode=3; break;}
-				SetFontColor(CWHITE); cout<<"\'my\'      ";
-				SetFontColor(CGREEN); cout<<"exited normally";
-				SetFontColor(CWHITE); cout<<" with time used: ";
-				SetFontColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				SetColor(CWHITE);  cout<<"\'my\'      ";
+				SetColor(CGREEN);  cout<<"exited normally";
+				SetColor(CWHITE);  cout<<" with time used: ";
+				SetColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				logF<<LOUT<<"CHECK::check() test "<<num<<" my exited normally.  Start: "<<startTime<<" End: "<<endTime<<" CLOCK: "<<CLOCKS_PER_SEC<<endl;
 				
 				startTime=clock();
 					exit_val=run(compare+" \""+ansOut+"\" \""+myOut+"\" >\""+logFile+"\"");
 				endTime=clock();
 				if(exit_val) {errcode=4; break;}
-				SetFontColor(CWHITE); cout<<"\'compare\' ";
-				SetFontColor(CGREEN); cout<<"exited normally";
-				SetFontColor(CWHITE); cout<<" with time used: ";
-				SetFontColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				SetColor(CWHITE);  cout<<"\'compare\' ";
+				SetColor(CGREEN);  cout<<"exited normally";
+				SetColor(CWHITE);  cout<<" with time used: ";
+				SetColor(CYELLOW); printf("%.4lfs\n",(double)(endTime-startTime)/CLOCKS_PER_SEC);
+				logF<<LOUT<<"CHECK::check() test "<<num<<" compare exited normally.  Start: "<<startTime<<" End: "<<endTime<<" CLOCK: "<<CLOCKS_PER_SEC<<endl;
 			}
-			SetFontColor(CYELLOW);
+			SetColor(CYELLOW);
 			cout<<endl<<endl<<"-------- tests over --------"<<endl;
+			logF<<LOUT<<"CHECK:check() tests over"<<endl;
 			if(!errcode)
 			{
-				SetFontColor(CGREEN);
+				SetColor(CGREEN);
 				cout<<"All tests passed!"<<endl;
+				logF<<LOUT<<"CHECK:check() All tests passed."<<endl;
 			}
 			else
 			{
-				SetFontColor(CRED);
+				SetColor(CRED);
 				cout<<"Failed on test "<<num<<" :"<<endl;
+				logF<<LOUT<<"CHECK:check() Failed on test "<<num<<", errcode: "<<errcode<<endl;
 			}
 			if(errcode==1) cout<<"Err while running \'make\' with exit val: "<<exit_val<<endl;
 			if(errcode==2) cout<<"Err while running \'ans\' with exit val: "<<exit_val<<endl;
@@ -100,21 +109,22 @@ namespace CHECK
 		}
 		catch(...)
 		{
-			SetFontColor(CRED);
+			SetColor(CRED);
 			cout<<"Unknown Error!"<<endl;
 			errcode=-1201;
 		}
-		SetFontColor(CWHITE);
+		SetColor(CWHITE);
 		return errcode;
 	}
 }
 
 signed main()
 {
-	CHECK::check(4321,1234,"a.exe","b.exe");
+	string id=initialize();
+	// CHECK::check(4321,1234,"a.exe","b.exe");
 	// cout<<"Press any key to exit"<<endl;
 	// getch();
-	return 0;
+	exit_all(0);
 }
 // ----------------------------
 // by imzzy

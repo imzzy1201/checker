@@ -130,8 +130,8 @@ namespace LOG
 	ofstream logF;
 	void init(string id)
 	{
-		mkdir(PATH + "/temp");
-		logF.open(PATH + "/temp/" + FNAME + '-' + id + ".log", ios::app);
+		mkdir(PATH + "/temp/" + FNAME);
+		logF.open(PATH + "/temp/" + FNAME + '/' + id + ".log", ios::app);
 		if(!logF) exit_all(1345);
 		logF << "------------------------------------------------" << endl;
 		logF << LOUT << "STARTED_SECCESSFULLY: " << PATH << ' ' << FNAME << ' ' << id << endl;
@@ -165,7 +165,7 @@ void exit_all(int exitVal = 0)
 }
 
 
-void initialize(string id = "RANDOM_VAL")
+string initialize(string id = "RANDOM_VAL")
 {
 	pair<string, string> p = GetPath();
 	PATH = p.first, FNAME = p.second;
@@ -179,4 +179,5 @@ void initialize(string id = "RANDOM_VAL")
 		delete[] tmp;
 	}
 	LOG::init(id);
+	return id;
 }
